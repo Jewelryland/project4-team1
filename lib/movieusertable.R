@@ -8,9 +8,9 @@ users <- reviews_filtered2 %>%
   group_by(review_userid) %>%
   summarize(
     user_count = n(),
-    avg_helpful_votes_per_review = mean(as.numeric(helpful.v)),
+    avg_helpful_votes = mean(as.numeric(helpful.v)),
     total_helpful_votes = sum(as.numeric(helpful.v)),
-    avg_votes_per_review = mean(as.numeric(total.v)),
+    avg_votes = mean(as.numeric(total.v)),
     total_votes = sum(as.numeric(total.v)),
     avg_review_helpfulness = mean(review_helpfulness),
     user_score_avg = mean(review_score),
