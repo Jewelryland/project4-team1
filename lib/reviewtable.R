@@ -62,5 +62,9 @@ reviews_filtered2 <- filter(reviews_filtered, review_userid %in% reviews_per_use
 # This table is for creating the movie summary table
 reviews_filtered <- filter(reviews_filtered, product_productid %in% reviews_filtered2$product_productid)
 
+# Replace NA values with 0
+reviews_filtered[is.na(reviews_filtered)] <- 0
+reviews_filtered2[is.na(reviews_filtered2)] <- 0
+
 saveRDS(reviews_filtered, "./data/reviews_filtered.RDS")
 saveRDS(reviews_filtered2, "./data/reviews_filtered2.RDS")
