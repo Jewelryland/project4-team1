@@ -19,16 +19,16 @@ users <- reviews_filtered2 %>%
     user_score_3 = sum(review_score == 3),
     user_score_4 = sum(review_score == 4),
     user_score_5 = sum(review_score == 5),
-    movies_1_star = list(product_productid[review_score == 1]),
-    movies_2_star = list(product_productid[review_score == 2]),
-    movies_3_star = list(product_productid[review_score == 3]),
-    movies_4_star = list(product_productid[review_score == 4]),
-    movies_5_star = list(product_productid[review_score == 5]),
-    review_1_star = list(review_id[review_score == 1]),
-    review_2_star = list(review_id[review_score == 2]),
-    review_3_star = list(review_id[review_score == 3]),
-    review_4_star = list(review_id[review_score == 4]),
-    review_5_star = list(review_id[review_score == 5])
+    movies_1_star = paste(product_productid[review_score == 1], collapse = " "),
+    movies_2_star = paste(product_productid[review_score == 2], collapse = " "),
+    movies_3_star = paste(product_productid[review_score == 3], collapse = " "),
+    movies_4_star = paste(product_productid[review_score == 4], collapse = " "),
+    movies_5_star = paste(product_productid[review_score == 5], collapse = " "),
+    review_1_star = paste(review_id[review_score == 1], collapse = " "),
+    review_2_star = paste(review_id[review_score == 2], collapse = " "),
+    review_3_star = paste(review_id[review_score == 3], collapse = " "),
+    review_4_star = paste(review_id[review_score == 4], collapse = " "),
+    review_5_star = paste(review_id[review_score == 5], collapse = " ")
   )
 
 saveRDS(users, "./data/users_filtered.RDS")
