@@ -22,8 +22,8 @@ for (i in 1:nrow(test)){
   new <- test[i,]
   similarity <- rep(NA, nrow(train))
   for (j in 1:length(similarity)) { similarity[j] <- sum(!is.na(as(train[i,], "matrix") * as(new, "matrix"))) }
-  similar_users <- train[order(similarity)[1:500],]
-  movie_index <- order(colSums(similar_users))[1:1000]
+  similar_users <- train[order(similarity)[1:1000],]
+  movie_index <- order(colSums(similar_users))[1:2000]
   RatingMatrix_Similar <- similar_users[, movie_index]
   new <- new[,movie_index]
   rec_model <- Recommender(data = RatingMatrix_Similar, method = "IBCF", parameter = list(k = 30))
@@ -34,7 +34,7 @@ for (i in 1:nrow(test)){
 }
 
 colnames(test_recommend) <- colnames
-names(test_recommend) <- rownames(test)
+rownames(test_recommend) <- rownames(test)
 test_recommend
 
 
