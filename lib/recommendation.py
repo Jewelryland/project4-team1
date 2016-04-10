@@ -4,7 +4,7 @@ Created on Sat Apr  9 18:36:22 2016
 
 @author: Arnold
 """
-# User-Item Collaborative Filtering
+# User-Based Collaborative Filtering
 
 import os
 # Set working directory to wherever your project4-team1 folder is
