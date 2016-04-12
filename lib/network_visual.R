@@ -1,3 +1,5 @@
+# Network Analysis and Visualization
+
 library(dplyr)
 library(recommenderlab)
 library(statnet)
@@ -8,6 +10,7 @@ reviews <- as.data.frame(readRDS("./data/reviews_original.RDS"))
 users <- as.data.frame(readRDS("./data/users_filtered.RDS"))
 movies <- as.data.frame(readRDS("./data/movies_filtered.RDS"))
 
+# Network of users
 # Users who give highest average scores
 users_high_id <- users$review_userid[order(users$user_score_avg, users$user_count, decreasing = T)[1:50]]
 users_high_review <- reviews %>%
@@ -22,7 +25,7 @@ users_low_review <- reviews %>%
                     select(review_userid, product_productid, review_score) %>%
                     left_join(users[,1:2], by = "review_userid")
 
-# Combine two groups of people who give highest and lowest average scores and plot the network
+# Combine two groups of people who give highest and lowest average scores
 users_reivew <- rbind(users_high_review, users_low_review)
 users_realRating <- as(users_reivew, "realRatingMatrix")
 users_group <- ifelse(rownames(users_realRating) %in% users_high_id, "high", "low")
@@ -30,55 +33,65 @@ users_similarity <- as.matrix(similarity(users_realRating, method = "cosine", wh
 users_similarity[is.na(users_similarity)] <- 0
 users_netmat <- ifelse(users_similarity > 0.05, 1, 0)
 users_net <- network(users_netmat, matrix.type = "adjacency")
+
+# Plot the network of users
 set.vertex.attribute(users_net, "group", users_group)
 vertex_col <- ifelse(users_group == "high", "slateblue", "green")
 gplot(users_net, usearrows = FALSE, vertex.cex = 1.5, vertex.col = vertex_col, edge.col = "grey75")
-legend("bottomleft", legend = c("high", "low"), col = c("slateblue", "green"), pch = 19, pt.cex = 1.5, bty = "n", title = "Users", cex = 1.2)
+legend("bottomleft", legend = c("high", "low"), col = c("slateblue", "green"), 
+       pch = 19, pt.cex = 1.5, bty = "n", title = "Users", cex = 1.2)
 title("The network of users give\nhighest and lowest average scores")
 
 
+# Network of movies
 # Moives which have highest average scores
 movies_high_id <- movies$product_productid[order(movies$movie_score_avg, movies$movie_count, decreasing = T)[1:50]]
 movies_high_review <- reviews %>%
-  filter(product_productid %in% movies_high_id) %>%
-  select(review_userid, product_productid, review_score)
+                      filter(product_productid %in% movies_high_id) %>%
+                      select(review_userid, product_productid, review_score)
 
-# Users who give lowest average scores
+# Movies which have lowest average scores
 movies_low_id <- movies$product_productid[order(-movies$movie_score_avg, movies$movie_count, decreasing = T)[1:50]]
 movies_low_review <- reviews %>%
-  filter(product_productid %in% movies_low_id) %>%
-  select(review_userid, product_productid, review_score)
+                     filter(product_productid %in% movies_low_id) %>%
+                     select(review_userid, product_productid, review_score)
 
-# Combine two groups of people who give highest and lowest average scores and plot the network
+# Combine two groups of movies which have highest and lowest average scores
 movies_reivew <- rbind(movies_high_review, movies_low_review)
 movies_realRating <- as(movies_reivew, "realRatingMatrix")
 movies_group <- ifelse(colnames(movies_realRating) %in% movies_high_id, "high", "low")
 movies_similarity <- as.matrix(similarity(movies_realRating, method = "cosine", which = "items"))
 movies_similarity[is.na(movies_similarity)] <- 0
 movies_netmat <- ifelse(movies_similarity > 0.01, 1, 0)
+
+# Plot the network of movies
 movies_net <- network(movies_netmat, matrix.type = "adjacency")
 set.vertex.attribute(movies_net, "group", movies_group)
 vertex_col <- ifelse(movies_group == "high", "slateblue", "green")
 gplot(movies_net, usearrows = FALSE, vertex.cex = 1.5, vertex.col = vertex_col, edge.col = "grey75")
-legend("bottomleft", legend = c("high", "low"), col = c("slateblue", "green"), pch = 19, pt.cex = 1.5, bty = "n", title = "Users", cex = 1.2)
+legend("bottomleft", legend = c("high", "low"), col = c("slateblue", "green"), 
+       pch = 19, pt.cex = 1.5, bty = "n", title = "Users", cex = 1.2)
 title("The network of movies with\nhighest and lowest average scores")
 
 
-# Network of movies with genre as labels
+# Network of movies labeled by genre
 genre <- readRDS("./data/movie_genre.rds")
 reviews_original <- as.data.frame(readRDS("./data/reviews_original.RDS"))
 genre <- data.frame(product_productid = unique(reviews_original$product_productid)[1:100], genre = genre[,1])
 reviews_genre <- reviews_original %>%
-                 filter(product_productid %in% movies_genre$product_productid) %>%
+                 filter(product_productid %in% genre$product_productid) %>%
                  select(review_userid, product_productid, review_score) %>%
                  left_join(genre, by = "product_productid")
 movies_genre_realRating <- as(reviews_genre[,1:3], "realRatingMatrix")
-movies_genre_group <- lapply(colnames(movies_genre_realRating), function(x) as.character(reviews_genre$genre[which(reviews_genre$product_productid == x)[1]]))
+movies_genre_group <- lapply(colnames(movies_genre_realRating), 
+                             function(x) as.character(reviews_genre$genre[which(reviews_genre$product_productid == x)[1]]))
 movies_genre_group <- unlist(movies_genre_group)
 movies_genre_similarity <- as.matrix(similarity(movies_genre_realRating, method = "cosine", which = "items"))
 movies_genre_similarity[is.na(movies_genre_similarity)] <- 0
 movies_genre_netmat <- ifelse(movies_genre_similarity > 0.01, 1, 0)
 movies_genre_net <- network(movies_genre_netmat, matrix.type = "adjacency")
+
+# Plot the network of movies labeled by genres
 set.vertex.attribute(movies_genre_net, "group", movies_genre_group)
 genre_name <- unique(movies_genre_group)
 vertex_col <- unlist(lapply(movies_genre_group, function(x) which(genre_name == x)))
@@ -100,7 +113,9 @@ for (i in 1:n_movie){
   for (j in 1:n_movie){
     i_genre <- reviews_genre$genre[which(reviews_genre$product_productid == movie_name[i])[1]]
     j_genre <- reviews_genre$genre[which(reviews_genre$product_productid == movie_name[j])[1]]
-    if (i != j){  genre_similarity[which(genre_name == i_genre), which(genre_name == j_genre)] <- movies_genre_similarity[i,j] }
+    if (i != j){  
+      genre_similarity[which(genre_name == i_genre), which(genre_name == j_genre)] <- movies_genre_similarity[i,j] 
+    }
   }
 }
 
@@ -113,11 +128,22 @@ chordDiagram(genre_similarity)
 title("Similarity between genres")
 
 
-plot(users$user_count, users$avg_review_helpfulness, pch = 19)
-plot(movies$movie_count, movies$movie_score_avg, pch = 19)
+# Bubble plot of movie average scores and review counts
+set.seed(1)
+index <- sample(1:nrow(movies), 50)
+movies_sample <- movies[index,]
+radius <- sqrt(movies_sample$movie_count) / pi
+symbols(index, movies_sample$movie_score_avg, circles = radius, inches = 0.2, fg = "white", bg = "slateblue",
+        xlab = "", ylab = "Average Score", main = "Movie average scores vs number of reviews", xaxt = "n")
 
 
+# Movie average score vs number of movie reviews 
+plot(movies$movie_count, movies$movie_score_avg, pch = 20, col = "blue", xlab = "Number of movie reviews",
+     ylab = "Movie average score", main = "Movie average scores vs number of reviews")
 
+# Review helpfulness vs number of user reviews
+plot(users$user_count, users$avg_review_helpfulness, pch = 20, col = "blue", xlab = "Number of user reviews",
+     ylab = "Review helpfulness", main = "Review helpfulness vs numer of user reviews")
 
 
 
