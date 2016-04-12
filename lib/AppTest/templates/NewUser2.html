@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>Movie Recommendation App</title>
+ 
+ 
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+ 
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <script type=text/javascript src="../static/js/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript">  
+      
+     var mydata = {};
+     $.getJSON("../static/js/data.json", function(data) { 
+     var str1 = data[0].title;
+     var img1 = data[0].imgUrl;
+     var img2 = "http://design.bigbangfish.com/wp-content/uploads/disney-cartoons/Shaun-the-Sheep/Shaun-the-Sheep-pictures-3.jpg";
+      //console.log(img1)
+      //console.log(img2)
+     
+     var mov1 = "https://www.amazon.com/";
+     var title1 = str1.link(mov1);
+
+     document.getElementById("demo11").innerHTML = title1;
+     document.getElementById('demo12').src = img1;
+     document.getElementById("demo21").innerHTML = title1;
+     document.getElementById("demo22").src = img1;
+     document.getElementById("demo31").innerHTML = title1;
+     document.getElementById("demo32").src = img1;
+     }); 
+     
+    </script>
+ 
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" ><a href="/">Home</a>
+                    </li>
+                    <li role="presentation" ><a href="#">Old User</a>
+                    </li>
+                    <li role="presentation" class="active"><a href="/showNewUser">New User</a>
+                    </li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">Movie Recommendation System</h3>
+        </div>
+ 
+        <div class="jumbotron">
+            <h2>Find Your Favorite Movies</h2>
+            <p class="lead"></p>
+            <p><a class="btn btn-lg btn-success" href="#" role="button">Old User</a>
+            <a class="btn btn-lg btn-success" href="/showNewUser" role="button">New User</a>
+            </p>
+        </div>
+ 
+      <div class="row">
+        <div class="col-sm-4">
+          <div id="demo11">
+          </div>
+          <img id="demo12" width=200 height=200 />      
+        </div>
+        <div class="col-sm-4">
+          <div id="demo21">
+          </div>
+          <img id="demo22" width=200 height=200 />
+        </div>
+        <div class="col-sm-4">
+          <div id="demo31">
+          </div>
+          <img id="demo32" width=200 height=200 />
+        </div>
+      </div>    
+
+
+ 
+        <footer class="footer">
+            <p>&copy; Team 1 2016</p>
+        </footer>
+ 
+    </div>
+</body>
+ 
+</html>

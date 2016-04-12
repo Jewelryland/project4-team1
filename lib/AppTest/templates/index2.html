@@ -14,16 +14,18 @@
     <script type="text/javascript" src="../static/js/loaddata.js"></script>
     
     <script type="text/javascript">  
+      
      var mydata = {};
      $.getJSON("../static/js/data.json", function(data) { 
-     var str1 = JSON.stringify(data[0].title, null, 2); // spacing level = 2
-     var img1 = String(JSON.stringify(data[0].imgUrl)); // spacing level = 2
+     var str1 = data[0].title;
+     var img1 = data[0].imgUrl;
      var img2 = "http://design.bigbangfish.com/wp-content/uploads/disney-cartoons/Shaun-the-Sheep/Shaun-the-Sheep-pictures-3.jpg";
-     console.log(img1)
-     //console.log(typeof(img1))
+      //console.log(img1)
+      //console.log(img2)
+     
      var mov1 = "https://www.amazon.com/";
      var title1 = str1.link(mov1);
-     //var poster1 = img1.link(mov1);
+
      document.getElementById("demo11").innerHTML = title1;
      document.getElementById('demo12').src = img1;
      document.getElementById("demo21").innerHTML = title1;
@@ -33,11 +35,7 @@
      }); 
      
     </script>
-
-
-    
-
-    <script type=text/javascript>
+    <script type="text/javascript">  
       $(function() {
         $('#btnSubmit').click(function() {
           
@@ -46,31 +44,29 @@
             data: $('form').serialize(),
             type: 'POST',
             success: function(response) {
-                console.log(response);
+                //window.location.assign("/showNewUser");
+                //location.href = "/showNewUser";
+                location.reload();
+                //console.log(response);
             },
             error: function(error) {
-                console.log(error);
+                //console.log(error);
             }
           
           });
         });
       });
-    </script>
-
+    </script>   
   </head>
  
-  <body>
-
-    
-
- 
+  <body> 
     <div class="container">
       <div class="header">
         <nav>
           <ul class="nav nav-pills pull-right">
-            <li role="presentation" ><a href="/">Home</a></li>
-            <li role="presentation"><a href="#">Old User</a></li>
-            <li role="presentation" class="active"><a href="#">New User</a></li>
+            <li role="presentation" class="active"><a href="/">Home</a></li>
+            <li role="presentation" ><a href="#">Old User</a></li>
+            <li role="presentation" ><a href="/showNewUser">New User</a></li>
           </ul>
         </nav>
         <h3 class="text-muted">Movie Recommendation System</h3>
@@ -81,13 +77,13 @@
         <p>
         <form class="form-inline" role="form">
           <div class="form-group">
-            <input type="text" class="form-control" name="movie1" placeholder="Movie 1" required autofocus>
-            <input type="text" class="form-control" name="movie2" placeholder="Movie 2" required>
-            <input type="text" class="form-control" name="movie3" placeholder="Movie 3" required>
+            <input type="text" class="form-control" name="movie1" placeholder="Movie 1"  autofocus>
+            <input type="text" class="form-control" name="movie2" placeholder="Movie 2" >
+            <input type="text" class="form-control" name="movie3" placeholder="Movie 3" >
           
-            <input type="number" class="form-control" name="rate1" placeholder="Rating 1" required>
-            <input type="number" class="form-control" name="rate2" placeholder="Rating 2" required>
-            <input type="number" class="form-control" name="rate3" placeholder="Rating 3" required>
+            <input type="number" class="form-control" name="rate1" placeholder="Rating 1" >
+            <input type="number" class="form-control" name="rate2" placeholder="Rating 2" >
+            <input type="number" class="form-control" name="rate3" placeholder="Rating 3" >
           
           <p></p>
                
@@ -113,12 +109,6 @@
           <img id="demo32" width=200 height=200 />
         </div>
       </div>    
-     
-
-  
-      
-
-
 
 
       <footer class="footer">
