@@ -14,6 +14,8 @@ os.getcwd()
 
 import pandas as pd
 import numpy as np
+movies_list = pd.read_csv("./data/movies_filtered.csv")
+movies_list = list(movies_list['product_productid'])
 users = pd.read_csv("./data/users_filtered.csv") # Read in the user table
 users = users.fillna("") # Change NaN to ""
 users_colnames = list(users) # Get column names
@@ -38,6 +40,29 @@ for user in range(len(users)):
             users_data[userids[user]][movie] = star
         star += 1
         print((user, col))
+        
+def cossimilarity(ratings1, ratings2):
+    '''
+    Computes cosine similarity between two users' ratings.
+    Only applies to movies that the two users have rated in common.
+    '''
+    
+    x = []
+    y = []
+    n = 0
+    for key in ratings1:
+        if key in ratings2:
+            n += 1
+            x.append(ratings1[key])
+            y.append(ratings2[key])
+    if n == 0:
+        return 0
+    x = np.asarray(x)
+    y = np.asarray(y)
+    if np.dot(x, x) == 0 or np.dot(y, y) == 0:
+        return 0
+    result = np.dot(x, y) / np.sqrt(np.dot(x, x) * np.dot(y, y))
+    return result    
     
 def pearson(ratings1, ratings2):
     '''
@@ -79,7 +104,7 @@ def most_similar_users(username, userids):
     distances = []
     for user in range(len(userids)):
         if userids[user] != username:
-            distance = pearson(users_data[userids[user]], users_data[username])
+            distance = cossimilarity(users_data[userids[user]], users_data[username])
             intersection = users_data[userids[user]].keys() & users_data[username].keys()
             distances.append((round(distance, 2), len(intersection), userids[user]))
     # sort based on distance - closest first
@@ -116,6 +141,8 @@ def recommend(username, userids):
             if new_movies[i] in users_data[similar_users[similar_user][2]]:
                 score_matrix[similar_user, i] = users_data[similar_users[similar_user][2]][new_movies[i]] * similar_users[similar_user][0] * similar_users[similar_user][1]
     ranking = score_matrix.mean(axis = 0)
+    if sum(ranking) == 0:
+        return "Cosine similarity value is 0 for all users"
     
     # Obtain the top 3 UNIQUE scores and match them to movies
     # (Not specifically looking for UNIQUE scores will yield duplicate movies)
@@ -148,5 +175,7 @@ print(demo2)
 demo3 = recommend('AUK4Q3BY8BLT2', userids)
 print(demo3)
 # It recommends Sideways, Red Eye, and Monster-in-Law
-    
-    
+
+userids[len(userids)] = 'newuser2'
+users_data['newuser2'] = {'B00005JLEU': 2, 'B000A9QKLE': 5, 'B001DPHDJ2': 4}
+demo4 = recommend('newuser2', userids)
