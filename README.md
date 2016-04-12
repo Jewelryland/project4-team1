@@ -7,7 +7,7 @@ Group 1: Chenlu Ji, Arnold Chua Lau, Yueying Teng, Jingwei Li.
 
 All members contributed equally to the project.
 
-<p><center><img src="figs/preview.png" width=420 height=300 ></center></p>
+<p><center><img src="figs/preview.png" width=450 height=300 ></center></p>
 
 In this project, we used the [Stanford dataset](http://snap.stanford.edu/data/web-Movies.html) consisting of Amazon movie from Aug 1997 to Oct 2012 to build a movie recommendation system. We filtered the dataset to a smaller one by choosing users with more than 100 reviews and movies that has more than 100 reviews.
 
