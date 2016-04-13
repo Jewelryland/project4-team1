@@ -3,7 +3,7 @@ from amazonproduct import API
 import os
 import pandas as pd
 import numpy as np
-from recommender.py import cossimilarity, most_similar_users, recommend
+from recommender import cossimilarity, most_similar_users, recommend
 
 app = Flask(__name__)
 
@@ -20,6 +20,7 @@ userids = {}
 for i in range(len(users)):
     userids[i] = users['review_userid'][i]
 
+
 # Create a dictionary:
 #     keys are user IDs
 #     values are themselves dictionaries
@@ -35,7 +36,7 @@ for user in range(len(users)):
         for movie in users[users_colnames[col]][user].split():
             users_data[userids[user]][movie] = star
         star += 1
-
+#print(users_data['A100JCBNALJFAW'])
 
 @app.route("/")
 def main():
@@ -59,21 +60,82 @@ def Recommend():
     _rate3 = int(request.form['rate5'])
 
     # keywords to ASIN
-    api = API("AKIAJGEEABW2F4H7ZB4Q", "6+ShIy2suLuPzWOdhEbzA8y4Cd3QDdfzokAbILB1","us","yueyingteng-20")
+    # api = API("AKIAJGEEABW2F4H7ZB4Q", "6+ShIy2suLuPzWOdhEbzA8y4Cd3QDdfzokAbILB1","us","yueyingteng-20")
+   
+    api = API("AKIAIKFQCWRMAQBAIGDQ","V3URxyjcNbnRgak1CnWSoNqze2OFo2xkzxhYgYbg","us","chenlji-20")
+
+
+    print(1)
 
     ASIN = {}
+    print("1.1")
     keywords = [_movie1, _movie2, _movie3, _movie4, _movie5]
+    print("1.2")
     for keyword in keywords:
         ASIN[keyword] = []
         results = api.item_search('DVD', Title = keyword)
+        print("1.3")
         for item in results:
             item =  item.ASIN
             ASIN[keyword].append(item)
+    
+    print(2)
 
-    from recommender.py import create_new_user_data
+    # ASIN = {}
+    # keywords = ['little miss sunshine']
+    # ASIN['little miss sunshine'] = ['B000K7VHQE', 'B000MR1V22', 'B001JNNDDI', 'B000JU9OJ4']
+    
+
+    #from recommender import create_new_user_data
+    # def create_new_user_data(username, keywords, ratings):
+    #     print(a)
+    #     empty_dict = {}
+    #     print(b)
+    #     for i in range(len(keywords)):
+    #         print(c)
+    #     # if there are no ASINs in common between the Amazon API results and our data, do not create an entry
+    #         if len(set(ASIN[keywords[i]]) & set(movies_list)) == 0:
+    #             print(d)
+    #             continue
+    #         else:
+    #             print(e)
+    #         # get the first entry from the intersection of the Amazon API results and the ASINs in our data
+    #             empty_dict[list(set(ASIN[keywords[i]]) & set(movies_list))[0]] = ratings[i]
+    #     users_data[username] = empty_dict
+
+    # print(keywords[0])
+    # print(ASIN[keywords[0]])
+    # print(set(ASIN[keywords[0]]))
+    # a = [filter(lambda x: x in ASIN[keywords[0]], sublist) for sublist in movies_list]
+    # print("a")
+    
+    def create_new_user_data(username, keywords, ratings):
+        userids[len(userids)] = 'newuser1'
+        print("a")
+        empty_dict = {}
+        print("b")
+        for i in range(len(keywords)):
+            print("c")
+            if len(set(ASIN[keywords[i]]) & set(movies_list)) == 0:
+                print("d")
+                continue
+            else:
+                empty_dict[list(set(ASIN[keywords[i]]) & set(movies_list))[0]] = ratings[i]
+                print("e")
+        users_data[username] = empty_dict
+
+
+    print(3)
+    
+
     create_new_user_data('newuser1', keywords, [_rate1, _rate2, _rate3, _rate2, _rate1])
+    print(users_data['newuser1'])
 
-    testrun = recommend('newuser1', userids)
+    
+
+    testrun = recommend('newuser1', userids, users_data)
+
+    print(testrun)
 
     movies = {}
     for movie in testrun:
@@ -82,21 +144,34 @@ def Recommend():
         for item in api.item_lookup(str(movie)).Items.Item:
             title = item.ItemAttributes.Title 
             URL = item.ItemLinks.ItemLink.URL
-            movies[movie].append(title)
-            movies[movie].append(URL)
+            movies[movie].append(str(title))
+            movies[movie].append(str(URL))
         #result2 = api.item_lookup(str(movie), ResponseGroup='Images')
         for items in api.item_lookup(str(movie), ResponseGroup='Images').Items.Item:
             imageURL = items.ImageSets.ImageSet.LargeImage.URL
-            movies[movie].append(imageURL)
+            movies[movie].append(str(imageURL))
 
+
+    
+    # # movies2 = {'B004L9GLKE': ['Departed', 'http://www.amazon.com/Departed-Leonardo-DiCaprio/dp/tech-data/B004L9GLKE%3FSubscriptionId%3DAKIAJGEEABW2F4H7ZB4Q%26tag%3Dyueyingteng-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB004L9GLKE', 'http://ecx.images-amazon.com/images/I/51CN2a6OGvL.jpg'], 'B000S0DDG0': ['Dreamgirls', 'http://www.amazon.com/Dreamgirls-Jamie-Foxx/dp/tech-data/B000S0DDG0%3FSubscriptionId%3DAKIAJGEEABW2F4H7ZB4Q%26tag%3Dyueyingteng-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB000S0DDG0', 'http://ecx.images-amazon.com/images/I/51NsSmJiUxL.jpg'], '6300267881': ['The Exorcist [VHS]', 'http://www.amazon.com/The-Exorcist-VHS-Ellen-Burstyn/dp/tech-data/6300267881%3FSubscriptionId%3DAKIAJGEEABW2F4H7ZB4Q%26tag%3Dyueyingteng-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D6300267881', 'http://ecx.images-amazon.com/images/I/21HWKZ0WSNL.jpg']}
+    print(movies[testrun[0]][0])
+    print(movies[testrun[0]][1])
+    print(movies[testrun[0]][2])
+    # print(movies2[testrun[0]][0])
+    # print(movies2[testrun[0]][1])
+    # print(movies2[testrun[0]][2])
 
 
     data = [{"title1" : movies[testrun[0]][0], "url1" : movies[testrun[0]][1], "imgUrl1" : movies[testrun[0]][2],
     "title2" : movies[testrun[1]][0], "url2" : movies[testrun[1]][1], "imgUrl2" : movies[testrun[1]][2],
     "title3" : movies[testrun[2]][0], "url3" : movies[testrun[2]][1], "imgUrl3" : movies[testrun[2]][2]}]
     # Writing JSON data
+    
+    #data = [{'title1': 'The Exorcist [VHS]', 'title2': 'Departed', 'title3': 'Dreamgirls', 'url1': 'http://www.amazon.com/The-Exorcist-VHS-Ellen-Burstyn/dp/tech-data/6300267881%3FSubscriptionId%3DAKIAJGEEABW2F4H7ZB4Q%26tag%3Dyueyingteng-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D6300267881', 'url3': 'http://www.amazon.com/Dreamgirls-Jamie-Foxx/dp/tech-data/B000S0DDG0%3FSubscriptionId%3DAKIAJGEEABW2F4H7ZB4Q%26tag%3Dyueyingteng-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB000S0DDG0', 'url2': 'http://www.amazon.com/Departed-Leonardo-DiCaprio/dp/tech-data/B004L9GLKE%3FSubscriptionId%3DAKIAJGEEABW2F4H7ZB4Q%26tag%3Dyueyingteng-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB004L9GLKE', 'imgUrl3': 'http://ecx.images-amazon.com/images/I/51NsSmJiUxL.jpg', 'imgUrl2': 'http://ecx.images-amazon.com/images/I/51CN2a6OGvL.jpg', 'imgUrl1': 'http://ecx.images-amazon.com/images/I/21HWKZ0WSNL.jpg'}]
+
+    print(data)
     with open('static/js/data.json', 'w') as f:
-      json.dump(data,f)
+      json.dump(data,f, ensure_ascii = False, encoding = 'utf-8')
 
     return render_template('index.html')
     #return json.dumps({'status':'OK','user':_movie1,'pass':_rate1})
@@ -104,6 +179,6 @@ def Recommend():
 
 if __name__ == "__main__":
     # Bind to PORT if defined, otherwise default to 5000.
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5009))
     app.run(host='0.0.0.0', port=port)
 

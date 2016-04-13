@@ -12,7 +12,9 @@
      var mydata = {};
      $.getJSON("../static/js/data.json", function(data) { 
      var str1, str2, str3, img1, img2, img3, mov1, mov2, mov3;
+     //console.log(data[0].url1)
      mov1 = data[0].url1;
+     //console.log(mov1)
      mov2 = data[0].url2;
      mov3 = data[0].url3;
      str1 = data[0].title1.link(mov1);
