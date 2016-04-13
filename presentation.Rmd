@@ -1,5 +1,5 @@
 ---
-title: "Network Analysis and Visualization"
+title: "Project 4 Amazon Movie Reviews"
 author: "STATW4249_Project4_Team1_2016"
 date: "Wednesday, April 13, 2016"
 output: 
@@ -16,16 +16,40 @@ output:
 
 # Introduction
 
-Network analysis is the process of investigating social structures through the use of network and graph theories. 
+In this project, we used the Stanford dataset consisting of Amazon movie from Aug 1997 to Oct 2012 to build a movie recommendation system. We filtered the dataset to a smaller one by choosing users with more than 100 reviews and movies that has more than 100 reviews.
 
-In this project, we explored the relational dataset of Amazon movie reviews. Based on the similarity algorithm in recommendation system, we built the network of users, movies and movie genres.
+Example of movie reviews
 
+- product/productId: B003AI2VGA
+- review/userId: A141HP4LYPWMSR
+- review/profileName: Brian E. Erland "Rainbow Sphinx"
+- review/helpfulness: 7/7
+- review/score: 3.0
+- review/time: 1182729600
+- review/summary: "There Is So Much Darkness Now ~ Come For The Miracle"
+- review/text: Synopsis: On the daily trek from ...
 
-# Network analysis of users
+# Recommendation System
 
-First, import the libraries we need and read the data.
+## Algorithm
 
-```{r, message = FALSE}
+The recommendation system is users-based and it recommends the user three movies based on the movies feed to the system and their ratings entered.
+
+When new user enters the movie names and the corresponding ratings, the recommender will look for the most similar users in the existing dataset by cosine similarity. This could be a collection of more than one similar existing users. If this is the case, the system will pick the top three movies from all the movies rated by this group of similar users. During the process, we used Amazon API to transform movie name to ASIN. At last, three movies will be returned by the system that are thought to suit the user’s taste well.
+
+## Web app
+
+Here is the screenshot of our movie recommendation web app.
+
+![](./figs/preview.png)
+
+# Network Analysis and Visualization
+
+Network analysis is the process of investigating social structures through the use of network and graph theories. Based on the similarity algorithm in recommendation system, we built the network of users and movies.
+
+## Network of users
+
+```{r, echo = FALSE, message = FALSE}
 library(dplyr)
 library(tidyr)
 library(recommenderlab)
@@ -36,18 +60,13 @@ users <- as.data.frame(readRDS("./data/users_filtered.RDS"))
 movies <- as.data.frame(readRDS("./data/movies_filtered.RDS"))
 ```
 
-Sort the users table by average score, and select 50 users who give highest average score.
+Select 50 users who give highest average score and 50 users who give lowest average score.
 
-```{r, message = FALSE}
+```{r, echo = FALSE}
 users_high_id <- users$review_userid[order(users$user_score_avg, users$user_count, decreasing = T)[1:50]]
 users_high_review <- reviews %>%
                      filter(review_userid %in% users_high_id) %>%
                      select(review_userid, product_productid, review_score)
-```
-
-Repeat the process above to find the 50 users who give lowest average score.
-
-```{r, echo = FALSE}
 users_low_id <- users$review_userid[order(-users$user_score_avg, users$user_count, decreasing = T)[1:50]]
 users_low_review <- reviews %>%
                     filter(review_userid %in% users_low_id) %>%
@@ -56,7 +75,7 @@ users_low_review <- reviews %>%
 
 Combine the two groups of people who give highest and lowest scores. Calculate the similarity matrix and build network. The vertexes of network are users. If the similarity of two users is greater than 0.05, there will be an edge between the two vertexes. Otherwise, there will be no edge.
 
-```{r, message = FALSE}
+```{r, echo = FALSE}
 users_reivew <- rbind(users_high_review, users_low_review)
 users_realRating <- as(users_reivew, "realRatingMatrix")
 users_group <- ifelse(rownames(users_realRating) %in% users_high_id, "high", "low")
@@ -80,11 +99,11 @@ title("The network of users give\nhighest and lowest average scores")
 It is obvious that users who give highest average scores are highly related, while many users who give lowest scores are less similar to others.
 
 
-# Network analysis of movies
+## Network of movies
 
 Sort the movies table by average score, then select 50 movies with highest average scores and 50 movies with lowest average scores.
 
-```{r, message = FALSE}
+```{r, echo = FALSE}
 movies_high_id <- movies$product_productid[order(movies$movie_score_avg, movies$movie_count, decreasing = T)[1:50]]
 movies_high_review <- reviews %>%
                       filter(product_productid %in% movies_high_id) %>%
@@ -97,7 +116,7 @@ movies_low_review <- reviews %>%
 
 Combine the two groups of movies which have highest and lowest average scores. Calculate the similarity matrix and build network. The vertexes of network are movies. If the similarity of two movies is greater than 0.01, there will be an edge between the two vertexes. Otherwise, there will be no edge.
 
-```{r, message = FALSE}
+```{r, echo = FALSE}
 movies_reivew <- rbind(movies_high_review, movies_low_review)
 movies_realRating <- as(movies_reivew, "realRatingMatrix")
 movies_group <- ifelse(colnames(movies_realRating) %in% movies_high_id, "high", "low")
@@ -120,11 +139,11 @@ title("The network of movies with\nhighest and lowest average scores")
 
 Movies are clustered in several groups. A few of movies with high scores are similar to movies with low scores. This phenomemon may result from the attributes of movies, like genre, director, actor, etc.
 
-# Other plots
+## Other plots
 
-## Bubble plot of movie average scores and number of reviews
+### Bubble plot of movie average scores and number of reviews
 
-```{r, message = FALSE, fig.align = "center"}
+```{r, echo = FALSE, fig.align = "center"}
 set.seed(1)
 index <- sample(1:nrow(movies), 50)
 movies_sample <- movies[index,]
@@ -136,9 +155,9 @@ symbols(index, movies_sample$movie_score_avg, circles = radius, inches = 0.2, fg
 It seems that movies with more reviews tend to have higher average scores. In order to show the relationship more clearly, we plot the scatterplot of movie average score against number of movie reviews.
 
 
-## Movie average score against number of movie reviews 
+### Movie average score against number of movie reviews 
 
-```{r, message = FALSE, fig.align = "center"}
+```{r, echo = FALSE, fig.align = "center"}
 plot(movies$movie_count, movies$movie_score_avg, pch = 20, col = "blue", xlab = "Number of movie reviews",
      ylab = "Movie average score", main = "Movie average scores vs number of reviews")
 ```
@@ -146,9 +165,9 @@ plot(movies$movie_count, movies$movie_score_avg, pch = 20, col = "blue", xlab = 
 It shows that the more reviews a movie have, the less possible for the movie to have low average score. It is reasonable because better movies tend to be more popular, which leads to higher scores.
 
 
-## Average helpfulness of reviews against number of user reviews
+### Average helpfulness of reviews against number of user reviews
 
-```{r, message = FALSE, fig.align = "center"}
+```{r, echo = FALSE, fig.align = "center"}
 plot(users$user_count, users$avg_review_helpfulness, pch = 20, col = "blue", xlab = "Number of user reviews",
      ylab = "Review helpfulness", main = "Review helpfulness vs numer of user reviews")
 ```
