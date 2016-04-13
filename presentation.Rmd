@@ -33,9 +33,9 @@ Example of movie reviews
 
 ## Algorithm
 
-The recommendation system is users-based and it recommends the user three movies based on the movies feed to the system and their ratings entered.
+The recommendation system is `users-based` and it recommends the user three movies based on the movies feed to the system and their ratings entered.
 
-When new user enters the movie names and the corresponding ratings, the recommender will look for the most similar users in the existing dataset by cosine similarity. This could be a collection of more than one similar existing users. If this is the case, the system will pick the top three movies from all the movies rated by this group of similar users. During the process, we used Amazon API to transform movie name to ASIN. At last, three movies will be returned by the system that are thought to suit the user’s taste well.
+When new user enters the movie names and the corresponding ratings, the recommender will look for the most similar users in the existing dataset by `cosine` similarity. This could be a collection of more than one similar existing users. If this is the case, the system will pick the top three movies from all the movies rated by this group of similar users. During the process, we used Amazon API to transform movie name to ASIN. At last, three movies will be returned by the system that are thought to suit the user’s taste well.
 
 ## Web app
 
@@ -85,7 +85,7 @@ users_netmat <- ifelse(users_similarity > 0.05, 1, 0)
 users_net <- network(users_netmat, matrix.type = "adjacency")
 ```
 
-Set "high" and "low" as vertex attributes and plot the network of users.
+Set `high` and `low` as vertex attributes and plot the network of users.
 
 ```{r, echo = FALSE, fig.align = "center"}
 set.vertex.attribute(users_net, "group", users_group)
@@ -125,7 +125,7 @@ movies_similarity[is.na(movies_similarity)] <- 0
 movies_netmat <- ifelse(movies_similarity > 0.01, 1, 0)
 ```
 
-Set "high" and "low" as vertex attributes and plot the network of movies.
+Set `high` and `low` as vertex attributes and plot the network of movies.
 
 ```{r, echo = FALSE, fig.align = "center"}
 movies_net <- network(movies_netmat, matrix.type = "adjacency")
@@ -169,7 +169,7 @@ It shows that the more reviews a movie have, the less possible for the movie to 
 
 ```{r, echo = FALSE, fig.align = "center"}
 plot(users$user_count, users$avg_review_helpfulness, pch = 20, col = "blue", xlab = "Number of user reviews",
-     ylab = "Review helpfulness", main = "Review helpfulness vs numer of user reviews")
+     ylab = "Review helpfulness", main = "Review helpfulness vs number of user reviews")
 ```
 
 As the number of user reviews, the average helpfulness of reviews converges to 0.6. In conclusion, it is less possible for users who give much reviews to have very high or low average helpfulness.
