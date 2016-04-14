@@ -19,5 +19,5 @@ Our movie recommendation web app can be found [here](https://vast-basin-99316.he
 
 The app runs perfectly in a local folder. Everyone is welcome to use our repository to build a web app of their own. You can download the folder 'lib/app' to your computer and run app.py in terminal. We used python 2.7, python flask, python amazonapi, html, javascipt and jquery to build the app. The solutions to some problems in building the app can be found on our [wiki page](https://github.com/TZstatsADS/project4-team1/wiki).
 
-Our presentation file is [here](presentation.Rmd).
+Our presentation file is [here](presentation.pdf).
 
