@@ -2,14 +2,16 @@
 title: "Project 4 Amazon Movie Reviews"
 author: "STATW4249_Project4_Team1_2016"
 date: "Wednesday, April 13, 2016"
-output: 
+output:
+  pdf_document:
+    toc: yes
   html_document:
-    fig_width: 6
-    fig_height: 6
     fig_caption: yes
+    fig_height: 6
+    fig_width: 6
+    highlight: tango
     number_sections: yes
     theme: united
-    highlight: tango
     toc: yes
 ---
 
