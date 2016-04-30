@@ -60,9 +60,8 @@ def Recommend():
     _rate3 = int(request.form['rate5'])
 
     # keywords to ASIN
-    # api = API("AKIAJGEEABW2F4H7ZB4Q", "6+ShIy2suLuPzWOdhEbzA8y4Cd3QDdfzokAbILB1","us","yueyingteng-20")
-   
-    api = API("AKIAIKFQCWRMAQBAIGDQ","V3URxyjcNbnRgak1CnWSoNqze2OFo2xkzxhYgYbg","us","chenlji-20")
+       
+    api = API(aws credentials) # you need to buy your own aws credentials
 
 
     # print(1)
